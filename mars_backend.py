@@ -386,11 +386,20 @@ class AnomalyEngine:
 
     def _record(self, idx, rank, tier, names, scores, norm, zmod, thumbs, grays, recons, threshold):
         heat = None
+        max_err, mean_err, p95_err, affected_area = 0.0, 0.0, 0.0, 0.0
         if recons is not None:
             heat = error_overlay(grays[idx], recons[idx])
+            from scipy.ndimage import gaussian_filter
+            err = gaussian_filter(np.abs(grays[idx] - recons[idx]), sigma=2.0)
+            max_err = float(err.max())
+            mean_err = float(err.mean())
+            p95_err = float(np.percentile(err, 95))
+            affected_area = float((err > 0.3).mean() * 100)
+            
         rec = {"rank": rank, "tier": tier, "name": names[idx], "score": float(scores[idx]),
                "score_norm": float(norm[idx]), "z": float(zmod[idx]),
-               "stands_out": bool(zmod[idx] > 3.5), "original": thumbs[idx], "heatmap": heat}
+               "stands_out": bool(zmod[idx] > 3.5), "original": thumbs[idx], "heatmap": heat,
+               "max_err": max_err, "mean_err": mean_err, "p95_err": p95_err, "affected_area": affected_area}
         if threshold is not None:
             rec["flagged"] = bool(scores[idx] > threshold)
         return rec
