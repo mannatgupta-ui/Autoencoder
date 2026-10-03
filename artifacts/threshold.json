@@ -1,0 +1,8 @@
+{
+  "method": "mad",
+  "threshold": 0.44964976658109107,
+  "version": "v2",
+  "latent_dim": 64,
+  "n_images": 500,
+  "n_flagged": 98
+}
