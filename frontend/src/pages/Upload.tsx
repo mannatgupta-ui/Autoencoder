@@ -73,7 +73,8 @@ const Upload = () => {
         formData.append('files', f.file);
       });
       
-      const backendUrl = `http://${window.location.hostname}:8000/api/analyze`;
+      const API_BASE = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:8000`;
+      const backendUrl = `${API_BASE}/api/analyze`;
       const response = await fetch(backendUrl, {
         method: 'POST',
         body: formData,
@@ -92,7 +93,7 @@ const Upload = () => {
         navigate(`/analysis/result`);
       }, 1000);
       
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       clearInterval(interval);
       setAnalyzing(false);
